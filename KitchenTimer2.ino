@@ -5,7 +5,7 @@ LiquidCrystal_I2C lcd(0x27,16,2);
 const int MinuteIN = 11;
 const int SecondIN = 10;
 const int RunIN    =  9;
-const int ResetIN  =  8;
+const int StopIN   =  8;
 
 const int buzzer = 12;
 
@@ -30,7 +30,7 @@ void setup(){
     pinMode(MinuteIN,INPUT);
     pinMode(SecondIN,INPUT);
     pinMode(RunIN   ,INPUT);
-    pinMode(ResetIN,INPUT);
+    pinMode(StopIN,INPUT);
     lcd.init();
     lcd.backlight();
 
@@ -82,15 +82,22 @@ void loop(){
             lcd.init();
     }
 
-
-    if(digitalRead(ResetIN) == 1){
+    if(digitalRead(StopIN) == 1){
         i = 0;
         tone(buzzer,262,100);
         delay(100);
-        MinuteTimes = 0;
-        SecondTimes = 0;
         noTone(buzzer);
         lcd.init();
+        lcd.setCursor(0,1);
+        lcd.print("STOP!");
+        lcd.init();
+    }
+
+    if(digitalRead(RunIN) == 1 && digitalRead(StopIN) == 1){
+        tone(buzzer,262,100);
+        i = 0;
+        MinuteTimes = 0;
+        SecondTimes = 0;
         lcd.setCursor(0,1);
         lcd.print("RESET!");
         lcd.init();
@@ -98,11 +105,11 @@ void loop(){
 
     if(i == 1){
         LCDTime = RunTime - RunTime2;
+        lcd.init();
         lcd.setCursor(7,1);
-        lcd.print("RUN!");
+        lcd.print("COUNT!");
         lcd.setCursor(0,1);
         lcd.print(LCDTime);
-        lcd.init();
     }
 
     lcd.setCursor(0,0);
